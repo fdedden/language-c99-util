@@ -22,3 +22,8 @@ instance IsList StructDeclnList where
   fromList []     = error_emptylist "StructDeclnList"
   fromList (x:xs) = foldl StructDeclnCons (StructDeclnBase x) xs
   toList = undefined
+
+instance IsList ArgExprList where
+  type Item ArgExprList = AssignExpr
+  fromList []     = error_emptylist "ArgExprList"
+  fromList (x:xs) = foldl ArgExprListCons (ArgExprListBase x) xs
