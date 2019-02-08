@@ -27,3 +27,10 @@ instance IsList ArgExprList where
   type Item ArgExprList = AssignExpr
   fromList []     = error_emptylist "ArgExprList"
   fromList (x:xs) = foldl ArgExprListCons (ArgExprListBase x) xs
+
+instance IsList InitList where
+  type Item InitList = Init
+  fromList []     = error_emptylist "InitExprList"
+  fromList (x:xs) = foldl step base xs where
+    base      = InitBase Nothing x
+    step ys y = InitCons ys Nothing y
