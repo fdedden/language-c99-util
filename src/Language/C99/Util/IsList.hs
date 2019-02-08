@@ -39,3 +39,8 @@ instance IsList BlockItemList where
   type Item BlockItemList = BlockItem
   fromList []     = error_emptylist "BlockItemList"
   fromList (x:xs) = foldl BlockItemCons (BlockItemBase x) xs
+
+instance IsList TransUnit where
+  type Item TransUnit = ExtDecln
+  fromList []     = error_emptylist "TransUnit"
+  fromList (x:xs) = foldl TransUnitCons (TransUnitBase x) xs
