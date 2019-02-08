@@ -34,3 +34,8 @@ instance IsList InitList where
   fromList (x:xs) = foldl step base xs where
     base      = InitBase Nothing x
     step ys y = InitCons ys Nothing y
+
+instance IsList BlockItemList where
+  type Item BlockItemList = BlockItem
+  fromList []     = error_emptylist "BlockItemList"
+  fromList (x:xs) = foldl BlockItemCons (BlockItemBase x) xs
