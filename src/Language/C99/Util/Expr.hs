@@ -3,6 +3,7 @@ module Language.C99.Util.Expr
   , nonzerodigit
   , nondigit
   , ident
+  , litbool
   , litint
   ) where
 
@@ -75,6 +76,10 @@ ident :: String -> Ident
 ident (c:cs) = foldl char (IdentBase $ nondigit c) cs where
   char cs c | isDigit c = IdentCons         cs (digit (read [c]))
             | otherwise = IdentConsNonDigit cs (nondigit c)
+
+litbool :: Bool -> PrimExpr
+litbool False = PrimConst $ ConstEnum $ Enum (ident "false")
+litbool True  = PrimConst $ ConstEnum $ Enum (ident "true")
 
 litint :: Integer -> UnaryExpr
 litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
