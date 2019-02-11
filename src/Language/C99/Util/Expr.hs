@@ -1,7 +1,17 @@
-module Language.C99.Util.Expr where
+module Language.C99.Util.Expr
+  ( digit
+  , nonzerodigit
+  , nondigit
+  , ident
+  , litint
+  ) where
+
+import Data.Char (isDigit)
 
 import Language.C99.AST
-import Data.Char (isDigit)
+
+-- A digit in Haskell, not C
+type HSDigit = Int
 
 digit :: Int -> Digit
 digit i = case i of
@@ -61,20 +71,27 @@ nondigit c = IdentNonDigit $ case c of
   'z' -> NDz ;      'Z' -> NDZ
   _   -> error $ show c ++ " is not a nondigit"
 
-digits :: Integer -> [Int]
-digits = map (read.return).show
-
 ident :: String -> Ident
 ident (c:cs) = foldl char (IdentBase $ nondigit c) cs where
   char cs c | isDigit c = IdentCons         cs (digit (read [c]))
             | otherwise = IdentConsNonDigit cs (nondigit c)
 
--- TODO
 litint :: Integer -> UnaryExpr
-litint i | i == 0 = UnaryPostfix $ PostfixPrim $ PrimConst $ ConstInt $ IntOc OcO Nothing
-      | i < 0  = UnaryOp UOMin (CastUnary $ litint $ abs i)
-      | i > 0  = UnaryPostfix $ PostfixPrim $ PrimConst $ ConstInt $ IntDec (foldl f (DecBase $ nonzerodigit n) ds) postfix where
-  (n:ds) = digits i
-  f xs x = DecCons xs (digit x)
-  postfix | i > 2^63 = Just $ IntSuffixUnsignedLong U Nothing
-          | otherwise = Nothing
+litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
+         | i >  0 = UnaryPostfix $ PostfixPrim $ constint i
+         | i <  0 = UnaryOp UOMin (CastUnary $ litint (abs i))
+
+
+intdigits :: Integer -> [HSDigit]
+intdigits = map (read.return).show
+
+constint :: Integer -> PrimExpr
+constint i = PrimConst $ ConstInt $ IntDec (decconst $ intdigits i) Nothing
+
+constzero :: PrimExpr
+constzero = PrimConst $ ConstInt $ IntOc Oc0 Nothing
+
+decconst :: [HSDigit] -> DecConst
+decconst (d:ds) = foldl step base ds where
+  base      = DecBase $ nonzerodigit d
+  step xs x = DecCons xs (digit x)
