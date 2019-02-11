@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Language.C99.Util.IsList where
+module Language.C99.Util.IsList () where
 
 import GHC.Exts
 
