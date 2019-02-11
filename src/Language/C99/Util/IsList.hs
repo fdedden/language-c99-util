@@ -6,7 +6,6 @@ module Language.C99.Util.IsList where
 import GHC.Exts
 
 import Language.C99.AST
-import Language.C99.Util
 
 error_emptylist name = error $ "Empty " ++ name ++ " is not allowed"
 
@@ -44,3 +43,8 @@ instance IsList TransUnit where
   type Item TransUnit = ExtDecln
   fromList []     = error_emptylist "TransUnit"
   fromList (x:xs) = foldl TransUnitCons (TransUnitBase x) xs
+
+instance IsList DeclnList where
+  type Item DeclnList = Decln
+  fromList []     = error_emptylist "DeclnList"
+  fromList (x:xs) = foldl DeclnCons (DeclnBase x) xs
