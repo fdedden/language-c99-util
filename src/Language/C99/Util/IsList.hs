@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Language.C99.Util.IsList () where
+module Language.C99.Util.IsList where
 
 import GHC.Exts
 
@@ -48,3 +48,19 @@ instance IsList DeclnList where
   type Item DeclnList = Decln
   fromList []     = error_emptylist "DeclnList"
   fromList (x:xs) = foldl DeclnCons (DeclnBase x) xs
+
+hcharseq :: [HChar] -> HCharSeq
+hcharseq []     = error_emptylist "HCharSeq"
+hcharseq (x:xs) = foldl HCharCons (HCharBase x) xs
+
+qcharseq :: [QChar] -> QCharSeq
+qcharseq []     = error_emptylist "QCharSeq"
+qcharseq (x:xs) = foldl QCharCons (QCharBase x) xs
+
+group :: [GroupPart] -> Group
+group []     = error_emptylist "HCharSeq"
+group (x:xs) = foldl GroupCons (GroupBase x) xs
+
+pptokens :: [PreprocToken] -> PPTokens
+pptokens []     = error_emptylist "PPTokens"
+pptokens (x:xs) = foldl PPTokensCons (PPTokensBase x) xs
