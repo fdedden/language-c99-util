@@ -64,3 +64,12 @@ group (x:xs) = foldl GroupCons (GroupBase x) xs
 pptokens :: [PreprocToken] -> PPTokens
 pptokens []     = error_emptylist "PPTokens"
 pptokens (x:xs) = foldl PPTokensCons (PPTokensBase x) xs
+
+paramlist :: [ParamDecln] -> ParamList
+paramlist []     = error_emptylist "ParamList"
+paramlist (x:xs) = foldl ParamCons (ParamBase x) xs
+
+voidparamlist :: [ParamDecln] -> ParamList
+voidparamlist [] =
+  paramlist [ParamDeclnAbstract (DeclnSpecsType TVoid Nothing) Nothing]
+voidparamlist xs = paramlist xs
