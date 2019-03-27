@@ -12,6 +12,7 @@ module Language.C99.Util.Expr
 import Data.Char (isDigit)
 
 import Language.C99.AST
+import Language.C99.Util.Wrap
 
 -- A digit in Haskell, not C
 type HSDigit = Int
@@ -118,6 +119,38 @@ litdouble = parse . lex where
 
 litfloat :: Float -> UnaryExpr
 litfloat = litdouble . realToFrac
+
+litstring :: String -> UnaryExpr
+litstring ss = wrap $ PrimString $ StringLit $ (sl ss) where
+  sl :: String -> Maybe SCharSeq
+  sl [] = Nothing
+  sl cs = Just $ readschar cs
+
+  readschar :: String -> SCharSeq
+  readschar (c:cs) = foldl SCharCons (SCharBase $ f c) (map f cs)
+
+  f :: Char -> SChar
+  f c | isEscseq c = SCharEsc $ litescseq c
+      | otherwise  = SChar c
+
+litescseq :: Char -> EscSeq
+litescseq c = case c of
+  '\'' -> EscSimple SEQuote
+  '\"' -> EscSimple SEDQuote
+  -- '\?' -> EscSimple SEQuestion
+  '\\' -> EscSimple SEBackSlash
+  '\a' -> EscSimple SEa
+  '\b' -> EscSimple SEb
+  '\f' -> EscSimple SEf
+  '\n' -> EscSimple SEn
+  '\r' -> EscSimple SEr
+  '\t' -> EscSimple SEt
+  '\v' -> EscSimple SEv
+  otherwise -> error $ show c ++ " is not an escape sequence."
+
+isEscseq :: Char -> Bool
+isEscseq c = c `elem` "\'\"\\\a\b\f\n\n\r\t\v"
+
 
 
 intdigits :: Integer -> [HSDigit]
