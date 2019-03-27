@@ -86,6 +86,33 @@ litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
          | i >  0 = UnaryPostfix $ PostfixPrim $ constint i
          | i <  0 = UnaryOp UOMin (CastUnary $ litint (abs i))
 
+litdouble :: Double -> UnaryExpr
+litdouble = parse . lex where
+  lex :: Double -> (String, String, String)
+  lex d | isInfinite d = error "Can't translate an infinite floating point number:"
+        | otherwise    = (nat, dec, exp) where
+    ds = show d
+    e = dropWhile (/='e') ds
+    nat = takeWhile (/='.') ds
+    dec = takeWhile (/='e') $ tail $ dropWhile (/='.') ds
+    exp = case length e of
+      0 -> ""
+      _ -> tail e
+
+  parse :: (String, String, String) -> UnaryExpr
+  parse (nat, dec, exp) = op $ PostfixPrim $ PrimConst $ ConstFloat $ FloatDec $ DecFloatFrac (FracZero (Just nat') dec') exp' Nothing where
+    op = case head nat of
+      '-' -> UnaryOp UOMin . CastUnary . UnaryPostfix
+      _   -> UnaryPostfix
+    nat' = case head nat of
+      '-' -> digitseq $ digitsc (tail nat)
+      _   -> digitseq $ digitsc nat
+    dec' = digitseq $ digitsc dec
+    exp' = case exp of
+      "" -> Nothing
+      (e:es)  -> case e of
+        '-' -> Just $ E (Just SMinus) (digitseq $ digitsc es)
+        _   -> Just $ E Nothing (digitseq $ digitsc (e:es))
 
 intdigits :: Integer -> [HSDigit]
 intdigits = map (read.return).show
@@ -100,3 +127,9 @@ decconst :: [HSDigit] -> DecConst
 decconst (d:ds) = foldl step base ds where
   base      = DecBase $ nonzerodigit d
   step xs x = DecCons xs (digit x)
+
+digitseq :: [Int] -> DigitSeq
+digitseq (x:xs) = foldl DigitCons (DigitBase (digit x)) (map digit xs) where
+
+digitsc :: [Char] -> [Int]
+digitsc cs = map (\x -> read [x]) cs
