@@ -114,6 +114,10 @@ litdouble = parse . lex where
         '-' -> Just $ E (Just SMinus) (digitseq $ digitsc es)
         _   -> Just $ E Nothing (digitseq $ digitsc (e:es))
 
+litfloat :: Float -> UnaryExpr
+litfloat = litdouble . realToFrac
+
+
 intdigits :: Integer -> [HSDigit]
 intdigits = map (read.return).show
 
