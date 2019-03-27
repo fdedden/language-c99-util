@@ -8,6 +8,7 @@ module Language.C99.Util.Expr
   , litdouble
   , litfloat
   , litstring
+  , identdeclr
   ) where
 
 import Data.Char (isDigit)
@@ -153,6 +154,8 @@ isEscseq :: Char -> Bool
 isEscseq c = c `elem` "\'\"\\\a\b\f\n\n\r\t\v"
 
 
+identdeclr :: String -> Declr
+identdeclr name = Declr Nothing (DirectDeclrIdent $ ident name)
 
 
 intdigits :: Integer -> [HSDigit]
