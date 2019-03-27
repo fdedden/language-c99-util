@@ -7,6 +7,7 @@ module Language.C99.Util.Expr
   , litint
   , litdouble
   , litfloat
+  , litstring
   ) where
 
 import Data.Char (isDigit)
@@ -150,6 +151,7 @@ litescseq c = case c of
 
 isEscseq :: Char -> Bool
 isEscseq c = c `elem` "\'\"\\\a\b\f\n\n\r\t\v"
+
 
 
 
