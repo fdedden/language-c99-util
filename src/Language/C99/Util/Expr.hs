@@ -5,6 +5,8 @@ module Language.C99.Util.Expr
   , ident
   , litbool
   , litint
+  , litdouble
+  , litfloat
   ) where
 
 import Data.Char (isDigit)
