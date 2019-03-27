@@ -19,11 +19,10 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:   Language.C99.Util,
-                     Language.C99.Util.Wrap,
+  exposed-modules:   Language.C99.Util
+  other-modules:     Language.C99.Util.Wrap,
                      Language.C99.Util.IsList,
                      Language.C99.Util.Expr
-  -- other-modules:
   -- other-extensions:
   build-depends:     base >=4.11 && <5,
                      language-c99 == 0.1.*
