@@ -11,7 +11,7 @@ description:
 license:             MIT
 license-file:        LICENSE
 author:              Frank Dedden
-maintainer:          dev@dedden.net
+maintainer:          Frank Dedden <dev@dedden.net>
 -- copyright:
 category:            Language
 build-type:          Simple
