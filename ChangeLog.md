@@ -1,5 +1,5 @@
 # Revision history for language-c99-util
 
-## 0.1.0.0 -- YYYY-mm-dd
+## 0.1.0.0 -- 2019-03-27
 
-* First version. Released on an unsuspecting world.
+* First version. Very basic version with support for copilot.
