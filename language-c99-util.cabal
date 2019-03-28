@@ -28,7 +28,7 @@ library
                      Language.C99.Util.IsList,
                      Language.C99.Util.Expr
   -- other-extensions:
-  build-depends:     base >=4.11 && <5,
+  build-depends:     base >=4.9 && <5,
                      language-c99 == 0.1.*
   hs-source-dirs:    src
   default-language:  Haskell2010
