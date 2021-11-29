@@ -91,9 +91,9 @@ litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
          | i >  0 = UnaryPostfix $ PostfixPrim $ constint i
          | i <  0 = UnaryOp UOMin (CastUnary $ litint (abs i))
 
-litdouble :: Double -> UnaryExpr
-litdouble = parse . lex where
-  lex :: Double -> (String, String, String)
+litfp :: (RealFloat a, Show a) => Maybe FloatSuffix -> a -> UnaryExpr
+litfp mbFS = parse . lex where
+  lex :: (RealFloat a, Show a) => a -> (String, String, String)
   lex d | isInfinite d = error "Can't translate an infinite floating point number:"
         | otherwise    = (nat, dec, exp) where
     ds = show d
@@ -105,7 +105,7 @@ litdouble = parse . lex where
       _ -> tail e
 
   parse :: (String, String, String) -> UnaryExpr
-  parse (nat, dec, exp) = op $ PostfixPrim $ PrimConst $ ConstFloat $ FloatDec $ DecFloatFrac (FracZero (Just nat') dec') exp' Nothing where
+  parse (nat, dec, exp) = op $ PostfixPrim $ PrimConst $ ConstFloat $ FloatDec $ DecFloatFrac (FracZero (Just nat') dec') exp' mbFS where
     op = case head nat of
       '-' -> UnaryOp UOMin . CastUnary . UnaryPostfix
       _   -> UnaryPostfix
@@ -119,8 +119,11 @@ litdouble = parse . lex where
         '-' -> Just $ E (Just SMinus) (digitseq $ digitsc es)
         _   -> Just $ E Nothing (digitseq $ digitsc (e:es))
 
+litdouble :: Double -> UnaryExpr
+litdouble = litfp Nothing
+
 litfloat :: Float -> UnaryExpr
-litfloat = litdouble . realToFrac
+litfloat = litfp (Just FF)
 
 litstring :: String -> UnaryExpr
 litstring ss = wrap $ PrimString $ StringLit $ (sl ss) where
