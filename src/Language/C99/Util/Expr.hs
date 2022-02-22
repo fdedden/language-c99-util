@@ -92,32 +92,37 @@ litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
          | i <  0 = UnaryOp UOMin (CastUnary $ litint (abs i))
 
 litfp :: (RealFloat a, Show a) => Maybe FloatSuffix -> a -> UnaryExpr
-litfp mbFS = parse . lex where
-  lex :: (RealFloat a, Show a) => a -> (String, String, String)
-  lex d | isInfinite d = error "Can't translate an infinite floating point number:"
-        | otherwise    = (nat, dec, exp) where
-    ds = show d
-    e = dropWhile (/='e') ds
-    nat = takeWhile (/='.') ds
-    dec = takeWhile (/='e') $ tail $ dropWhile (/='.') ds
-    exp = case length e of
-      0 -> ""
-      _ -> tail e
+litfp mbFS n
+  | isNaN n = UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "NAN"
+  | isInfinite n = UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "INFINITY"
+  | otherwise = litfpFinite mbFS n
+  where
+    litfpFinite :: (RealFloat a, Show a) => Maybe FloatSuffix -> a -> UnaryExpr
+    litfpFinite mbFS = parse . lex where
+      lex :: (RealFloat a, Show a) => a -> (String, String, String)
+      lex d = (nat, dec, exp) where
+        ds = show d
+        e = dropWhile (/='e') ds
+        nat = takeWhile (/='.') ds
+        dec = takeWhile (/='e') $ tail $ dropWhile (/='.') ds
+        exp = case length e of
+          0 -> ""
+          _ -> tail e
 
-  parse :: (String, String, String) -> UnaryExpr
-  parse (nat, dec, exp) = op $ PostfixPrim $ PrimConst $ ConstFloat $ FloatDec $ DecFloatFrac (FracZero (Just nat') dec') exp' mbFS where
-    op = case head nat of
-      '-' -> UnaryOp UOMin . CastUnary . UnaryPostfix
-      _   -> UnaryPostfix
-    nat' = case head nat of
-      '-' -> digitseq $ digitsc (tail nat)
-      _   -> digitseq $ digitsc nat
-    dec' = digitseq $ digitsc dec
-    exp' = case exp of
-      "" -> Nothing
-      (e:es)  -> case e of
-        '-' -> Just $ E (Just SMinus) (digitseq $ digitsc es)
-        _   -> Just $ E Nothing (digitseq $ digitsc (e:es))
+    parse :: (String, String, String) -> UnaryExpr
+    parse (nat, dec, exp) = op $ PostfixPrim $ PrimConst $ ConstFloat $ FloatDec $ DecFloatFrac (FracZero (Just nat') dec') exp' mbFS where
+      op = case head nat of
+        '-' -> UnaryOp UOMin . CastUnary . UnaryPostfix
+        _   -> UnaryPostfix
+      nat' = case head nat of
+        '-' -> digitseq $ digitsc (tail nat)
+        _   -> digitseq $ digitsc nat
+      dec' = digitseq $ digitsc dec
+      exp' = case exp of
+        "" -> Nothing
+        (e:es)  -> case e of
+          '-' -> Just $ E (Just SMinus) (digitseq $ digitsc es)
+          _   -> Just $ E Nothing (digitseq $ digitsc (e:es))
 
 litdouble :: Double -> UnaryExpr
 litdouble = litfp Nothing
