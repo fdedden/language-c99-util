@@ -29,6 +29,7 @@ library
                      Language.C99.Util.Expr
   -- other-extensions:
   build-depends:     base >=4.9 && <5,
-                     language-c99 >= 0.1 && < 0.2
+                     language-c99 >= 0.1 && < 0.2,
+                     ieee754      >= 0.8.0 && < 0.9
   hs-source-dirs:    src
   default-language:  Haskell2010
