@@ -94,7 +94,9 @@ litint i | i == 0 = UnaryPostfix $ PostfixPrim $ constzero
 litfp :: (RealFloat a, Show a) => Maybe FloatSuffix -> a -> UnaryExpr
 litfp mbFS n
   | isNaN n = UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "NAN"
-  | isInfinite n = UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "INFINITY"
+  | isInfinite n = case n > 0 of
+    True  -> UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "INFINITY"
+    False -> UnaryOp UOMin (CastUnary $ UnaryPostfix $ PostfixPrim $ PrimIdent $ ident "INFINITY")
   | otherwise = litfpFinite mbFS n
   where
     litfpFinite :: (RealFloat a, Show a) => Maybe FloatSuffix -> a -> UnaryExpr
