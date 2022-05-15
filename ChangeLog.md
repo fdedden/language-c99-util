@@ -2,6 +2,7 @@
 
 ## ... 2022-05-15
 
+* Added FlexibleContexts to Wrap to support GHC 9.2.
 * Added support for NaN, Infinity and -Infinity.
 
 ## 0.1.1 -- 2019-04-01
