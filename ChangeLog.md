@@ -1,5 +1,9 @@
 # Revision history for language-c99-util
 
+## ... 2022-05-15
+
+* Added support for NaN, Infinity and -Infinity.
+
 ## 0.1.1 -- 2019-04-01
 
 * Fixed version bounds on dependencies.
