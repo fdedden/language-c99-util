@@ -1,6 +1,6 @@
 # Revision history for language-c99-util
 
-## ... 2022-05-15
+## 0.2.0 -- 2022-05-21
 
 * Added FlexibleContexts to Wrap to support GHC 9.2.
 * Added support for NaN, Infinity and -Infinity.
